@@ -57,4 +57,21 @@ class AuthController extends Controller
             ], 401);
         }
     }
+
+
+    public function refreshTokenLogin(Request $request)
+    {
+        $request->validate([
+            'refresh_token'         => 'required|string',
+        ]);
+
+
+        $tokenResponse =    $this->passportService->getTokenAndRefreshTokenByRefreshToken($request->refresh_token);
+
+        $data = [
+            'token' => $tokenResponse
+        ];
+
+        return new JsonResponse($data, 200);
+    }
 }

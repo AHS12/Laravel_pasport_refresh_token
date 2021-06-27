@@ -28,15 +28,39 @@ class PassportService
     {
         $oClient = OClient::where('password_client', 1)->first();
 
-        $response = Http::asForm()->post(config('app.url').'/oauth/token', [
+        $response = Http::asForm()->post(config('app.test_url') . '/oauth/token', [
             'grant_type' => 'password',
             'client_id' => $oClient->id,
             'client_secret' => $oClient->secret,
             'username' => $email,
             'password' => $password,
-            'scope' => '*',
+            'scope' => '*', //for now all scope
         ]);
 
-        return $response;
+        //dd($response);
+
+        //  return json_decode((string) $response->getBody(), true);
+        return $response->json();
+    }
+
+    /**
+     * generate an access token with refresh token for the user's account by user's refresh token.
+     *
+     * @param  string $refreshToken
+     * @return \Illuminate\Http\Response
+     */
+    public function getTokenAndRefreshTokenByRefreshToken($refreshToken)
+    {
+        $oClient = OClient::where('password_client', 1)->first();
+
+        $response = Http::asForm()->post(config('app.test_url') . '/oauth/token', [
+            'grant_type' => 'refresh_token',
+            'refresh_token' => $refreshToken,
+            'client_id' => $oClient->id,
+            'client_secret' => $oClient->secret,
+            'scope' => '',
+        ]);
+
+        return $response->json();
     }
 }
